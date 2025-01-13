@@ -7,6 +7,8 @@ defmodule ElixirBankWeb.Router do
 
   scope "/api", ElixirBankWeb do
     pipe_through :api
+
+    get "/", WelcomeController, :index
   end
 
   # Enable LiveDashboard in development
