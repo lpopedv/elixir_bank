@@ -5,6 +5,7 @@ defmodule ElixirBank.Users.User do
   @params [:name, :password, :password_hash, :email, :cep]
   @required_params [:name, :password, :email]
 
+  @derive {Jason.Encoder, only: [:name, :email, :password]}
   schema "users" do
     field :name, :string
     field :password, :string, virtual: true
