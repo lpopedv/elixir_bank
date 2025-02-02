@@ -3,9 +3,11 @@ defmodule ElixirBank.Users.User do
   import Ecto.Changeset
 
   @params [:name, :password, :password_hash, :email, :cep]
-  @required_params [:name, :password, :email]
 
-  @derive {Jason.Encoder, only: [:name, :email, :password]}
+  @required_create_params [:name, :password, :email]
+  @required_update_params [:name, :email, :cep]
+
+  @derive {Jason.Encoder, only: [:name, :email, :cep]}
   schema "users" do
     field :name, :string
     field :password, :string, virtual: true
@@ -16,14 +18,27 @@ defmodule ElixirBank.Users.User do
     timestamps()
   end
 
-  def changeset(user \\ %__MODULE__{}, params) do
+  def changeset(params) do
+    %__MODULE__{}
+    |> cast(params, @params)
+    |> validate_required(@required_create_params)
+    |> do_validations()
+    |> add_password_hash()
+  end
+
+  def changeset(user, params) do
     user
     |> cast(params, @params)
-    |> validate_required(@required_params)
+    |> validate_required(@required_update_params)
+    |> do_validations()
+    |> add_password_hash()
+  end
+
+  defp do_validations(changeset) do
+    changeset
     |> validate_length(:name, min: 3)
     |> validate_format(:email, ~r/@/)
     |> validate_length(:cep, is: 8)
-    |> add_password_hash()
   end
 
   defp add_password_hash(
